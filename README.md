@@ -1,4 +1,4 @@
-Clinic Booking Website
+###Clinic Booking Website
 This project is a Clinic Booking Website that enables doctors and patients to efficiently schedule appointments. It utilizes AJAX and jQuery to create an interactive calendar system for managing bookings. The website provides a seamless user experience for both doctors and patients, allowing them to easily book and manage appointments.
 
 Key Features:
@@ -8,7 +8,7 @@ Interactive Calendar: The use of AJAX and jQuery provides an interactive calenda
 
 Contact Information: The website displays all relevant contact information for doctor, making it simple for patients to get in touch.
 
-Getting Started:
+###Getting Started:
 ### Attention
 -To import the database, use the admin profile with the email 'DocBooker@gmail.com' and the password 'adminPassword123'.
 -Clone this repository to your local machine.
