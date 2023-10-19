@@ -12,11 +12,17 @@ Contact Information: The website displays all relevant contact information for d
 ## Getting Started:
 ### Attention
 -To import the database, use the admin profile with the email 'DocBooker@gmail.com' and the password 'adminPassword123'.
+
 -Clone this repository to your local machine.
+
 -Ensure you have a web server set up to host the website.
+
 -Open the project in your web development environment.
+
 -Open two terminal and write (php artisan serve) in the first and (npm run dev) in the second.
+
 -Customize the contact information and booking features to fit your clinic's needs.
+
 ### Usage:
 Navigate to the website.
 Browse the available doctors and their schedules.
