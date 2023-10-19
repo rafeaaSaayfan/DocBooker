@@ -25,7 +25,7 @@ Set your availability and manage bookings if you are a doctor.
 Technologies Used:
 HTML, CSS, and JavaScript for the frontend.
 AJAX and jQuery for dynamic scheduling.
-mySql for managing data and appointments.
+Laravel for managing data and appointments.
 
 ### Contact:
 For any questions or support, please contact rafeaaSaayfan at rafehsaayfan@gmail.com.
