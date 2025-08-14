@@ -13,11 +13,9 @@ return new class extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('patient_id');
+            $table->foreignId('patient_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('message');
             $table->timestamps();
-
-            $table->foreign('patient_id')->references('id')->on('users');
         });
     }
 

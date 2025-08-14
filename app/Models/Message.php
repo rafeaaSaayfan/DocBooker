@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class messages extends Model
+class Message extends Model
 {
     use HasFactory;
 
@@ -13,4 +13,8 @@ class messages extends Model
         'patient_id',
         'message',
     ];
+
+    public function message_owner() {
+        return $this->belongsTo(User::class, 'patient_id');
+    }
 }

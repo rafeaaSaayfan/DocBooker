@@ -177,7 +177,7 @@
     <script>
 
         let li4 = document.getElementById("li4");
-        li4.classList.add("active", "border-b-2", "border-green-600", "pb-2", "font-semibold");
+        li4.classList.add("active", "bg-green-500/50", "p-2", "rounded-md", "font-semibold");
 
 
         let li4s = document.getElementById("li4s");

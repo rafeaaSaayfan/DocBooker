@@ -3,11 +3,11 @@
 @section('content')
 
     <div class="container mx-auto pt-28">
-        <h1 class="text-2xl font-semibold text-center">{{ __("messages.clinic") }}</h1>
+        <h1 class="text-3xl font-bold text-center">{{ __("messages.clinic") }}</h1>
     </div>
     <div class="container mx-auto grid md:grid-cols-5 gap-0 py-10 mb-10">
-        <div class="md:col-span-5 bg-blue-100 py-10 px-5">
-            <h1 class="text-xl text-blue-500 pb-5">{{ __("messages.ourClinic") }}</h1>
+        <div class="md:col-span-5 bg-blue-100 rounded-t-md py-10 px-5">
+            <h1 class="text-xl text-blue-500 pb-5 font-semibold">{{ __("messages.ourClinic") }}</h1>
             <li class="pb-5 text-sm px-2 text-justify">
                 {{ __("messages.clinicContent1") }}
             </li>
@@ -117,7 +117,7 @@
 
     <script>
         let li3 = document.getElementById("li3");
-        li3.classList.add("active", "border-b-2", "border-green-600", "pb-2", "font-semibold");
+        li3.classList.add("active", "bg-green-500/50", "p-2", "rounded-md", "font-semibold");
 
 
         let li3s = document.getElementById("li3s");

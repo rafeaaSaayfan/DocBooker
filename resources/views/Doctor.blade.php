@@ -43,7 +43,7 @@
         </div>
         <div class="certificate border-t border-gray-300 text-center py-10 flex flex-col justify-center items-center">
             <h2 class="text-xl font-semibold text-blue-500 pb-5">{{ __("messages.certificate") }}</h2>
-            <img src="{{ asset('storage/assets/images/certificate.jpg') }}" alt="">
+            <img src="{{ asset('/images/certificate.jpg') }}" alt="">
         </div>
         <div class="border-t border-gray-300 py-10 ">
             <h2 class="text-lg font-semibold mb-8 text-blue-500 text-center">{{ __("messages.contact") }}</h2>
@@ -171,7 +171,7 @@
 
     <script>
         let li5 = document.getElementById("li5");
-        li5.classList.add("active", "border-b-2", "border-green-600", "pb-2", "font-semibold");
+        li5.classList.add("active", "bg-green-500/50", "p-2", "rounded-md", "font-semibold");
 
 
         let li5s = document.getElementById("li5s");

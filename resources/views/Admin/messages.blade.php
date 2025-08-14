@@ -19,20 +19,24 @@
                     <div class="md:col-span-3 xl:col-span-2 flex items-center">
                         <p class="font-semibold">{{ __('messages.fullName') }}</p>
                         <p class="px-3 text-sm">
-                            {{ $message->firstName }} {{ $message->lastName }}
+                        {{ $message->message_owner?->firstName }} {{ $message->message_owner?->lastName }}
                         </p>
                     </div>
                     <div class="md:col-span-3 xl:col-span-2 flex items-center">
                         <p class="font-semibold">{{ __('messages.Emailcontact') }}</p>
                         <p class="px-3 text-sm">
-                            <a href="mailto: {{ $message->email }}" class="text-blue-500 underline underline-offset-2">{{ $message->email }}</a>
+                            <a href="mailto: {{ $message->email }}" class="text-blue-500 underline underline-offset-2">
+                                {{ $message->message_owner->email }}
+                            </a>
                         </p>
                     </div>
                     <div class="md:col-span-6 xl:col-span-2 flex items-center">
                         <p class="font-semibold">{{ __('messages.phoneNumber') }}:</p>
                         <p class="px-3 text-sm">
                             <a href="tel: {{ $message->phone }}" class="text-blue-500 underline underline-offset-2">
-                                <p class="@if (App::isLocale('ar')) ltr @endif">{{ $message->phone }}</p>
+                                <p class="@if (App::isLocale('ar')) ltr @endif">
+                                    {{ $message->message_owner?->phone }}
+                                </p>
                             </a>
                         </p>
                     </div>
@@ -44,10 +48,9 @@
             @endforeach
         </div>
     </div>
-</div>
 </body>
 
-<script src="{{ asset('storage/assets/js/app.js') }}"></script>
+<!-- <script src="{{ asset('storage/assets/js/app.js') }}"></script> -->
 <script>
 
 let messagesBtn = document.getElementById("messagesBtn");

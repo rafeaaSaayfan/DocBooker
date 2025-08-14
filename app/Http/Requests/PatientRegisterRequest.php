@@ -26,7 +26,7 @@ class PatientRegisterRequest extends FormRequest
             "lastName" => "required|min:3|alpha",
             "email" => "required|unique:users,email",
             "password" => "required|min:8|confirmed|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/",
-            "phone" => "required|unique:users,phone|regex:/^\+\d{3} \d{2} \d{3} \d{3}$/",
+            "phone" => "required|unique:users,phone|regex:/^\+\d{3}\d{2}\d{3}\d{3}$/",
         ];
     }
     function messages()

@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\messageRequest;
 use App\Models\appointment;
-use App\Models\messages;
-use App\Models\pictures;
+use App\Models\Message;
+use App\Models\Picture;
 use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
@@ -13,9 +13,10 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class UseController extends Controller
+class UserController extends Controller
 {
-    function home() {
+    public function home()
+    {
 
         $pictures = $this->getPictures();
         $authBookings = $this->selectAuthBooking();
@@ -23,26 +24,30 @@ class UseController extends Controller
         return view('Home', compact('pictures', 'authBookings'));
     }
 
-    function appointment() {
+    public function appointment()
+    {
         $authBookings = $this->selectAuthBooking();
         return view('Appointment', compact('authBookings'));
     }
 
-    function clinic() {
+    function clinic()
+    {
         $pictures = $this->getPictures();
         $authBookings = $this->selectAuthBooking();
 
         return view('Clinic', compact('pictures', 'authBookings'));
     }
 
-    function contactUs() {
+    function contactUs()
+    {
         $DocInfo = $this->getDocInfo();
         $authBookings = $this->selectAuthBooking();
 
         return view('contactUs', compact('DocInfo', 'authBookings'));
     }
 
-    function Doctor() {
+    function Doctor()
+    {
         $pictures = $this->getPictures();
         $DocInfo = $this->getDocInfo();
         $authBookings = $this->selectAuthBooking();
@@ -50,16 +55,18 @@ class UseController extends Controller
         return view('Doctor', compact('pictures', 'DocInfo', 'authBookings'));
     }
 
-    private function getDocInfo() {
+    private function getDocInfo()
+    {
         $DocInfo = DB::table('users')
-        ->select('*')
-        ->where('role', 1)
-        ->get();
+            ->select('*')
+            ->where('role', 1)
+            ->get();
         return $DocInfo;
     }
 
-    public function getPictures() {
-        $pictures = pictures::all();
+    public function getPictures()
+    {
+        $pictures = Picture::all();
 
         return $pictures;
     }
@@ -80,16 +87,22 @@ class UseController extends Controller
         return $monthsData;
     }
 
-    public function message(messageRequest $request) {
+    public function message(messageRequest $request)
+    {
+        $data = [];
 
-        $patient_id = auth()->user()->id;
+        if (auth()->check()) {
+            $data = [
+                'patient_id' => auth()->user()->id,
+                'message' => $request->input('message'),
+            ];
+        } else {
+            $data = [
+                'message' => $request->input('message'),
+            ];
+        }
 
-        $data = [
-            'patient_id' => $patient_id,
-            'message' => $request->input('message'),
-        ];
-
-        $message = messages::create($data);
+        $message = Message::create($data);
 
         if (!$message) {
             return redirect()->back()->withInput()->withErrors(['errorMessage' => 'Failed to create message.']);
@@ -99,52 +112,53 @@ class UseController extends Controller
     }
 
     // select auth booking
-    private function selectAuthBooking() {
+    private function selectAuthBooking()
+    {
         $user = auth()->user();
 
-        if($user) {
+        if ($user) {
             $selectAuthBooking = appointment::where('patient_id', $user->id)->orderBy('start_date', 'ASC')->get();
 
-        if ($selectAuthBooking->isEmpty()) {
-            return [];
-        }
+            if ($selectAuthBooking->isEmpty()) {
+                return [];
+            }
 
-        $authBookings = [];
+            $authBookings = [];
 
-        foreach ($selectAuthBooking as $item) {
-            $nowDate = Carbon::now();
-            $differenceDate = '';
+            foreach ($selectAuthBooking as $item) {
+                $nowDate = Carbon::now();
+                $differenceDate = '';
 
-            if ($nowDate >= $item->start_date && $nowDate <= $item->end_date) {
-                $differenceDate = 'now';
-            } elseif ($nowDate < $item->start_date) {
-                $hoursDifference = $nowDate->diffInHours($item->start_date);
-                $minutesDifference = $nowDate->diffInMinutes($item->start_date) % 60;
+                if ($nowDate >= $item->start_date && $nowDate <= $item->end_date) {
+                    $differenceDate = 'now';
+                } elseif ($nowDate < $item->start_date) {
+                    $totalMinutes = $nowDate->diffInMinutes($item->start_date, false);
+                    $hours = floor($totalMinutes / 60); 
+                    $minutes = $totalMinutes % 60; 
 
-                if (App::isLocale('en')) {
-                    $differenceDate = "$hoursDifference hours and $minutesDifference minutes left";
-                } else {
-                    $differenceDate = "باقي $hoursDifference ساعة و $minutesDifference دقيقية";
+                    if (App::isLocale('en')) {
+                        $differenceDate = "$hours hours and $minutes minutes left";
+                    } else {
+                        $differenceDate = "باقي $hours ساعة و $minutes دقيقية";
+                    }
+                }
+                if ($differenceDate != '') {
+                    $authBookings[] = [
+                        'date' => Carbon::parse($item->start_date)->format('d-m-Y'),
+                        'start_date' => Carbon::parse($item->start_date)->format('g:i A'),
+                        'end_date' => Carbon::parse($item->end_date)->format('g:i A'),
+                        'differenceDate' => $differenceDate
+                    ];
                 }
             }
-            if($differenceDate != '') {
-                $authBookings[] = [
-                    'date' => Carbon::parse($item->start_date)->format('d-m-Y'),
-                    'start_date' => Carbon::parse($item->start_date)->format('g:i A'),
-                    'end_date' => Carbon::parse($item->end_date)->format('g:i A'),
-                    'differenceDate' => $differenceDate
-                ];
-            }
+            return $authBookings;
         }
-        return $authBookings;
-
-    }
-
     }
 
 
     // bookings
-    public function dayAppointments($dateDisplayed) {
+    public function dayAppointments($dateDisplayed)
+    {
         $patient = auth()->user();
         $patientId = $patient->id;
 
@@ -152,7 +166,7 @@ class UseController extends Controller
 
         $bookings = array();
 
-        foreach($appointments as $appointment) {
+        foreach ($appointments as $appointment) {
 
             $dateFormated = Carbon::parse($appointment->start_date)->format('D d-M-Y');
 
@@ -167,20 +181,21 @@ class UseController extends Controller
             } elseif ($nowDate < $appointment->start_date) {
                 $checkDate = 'not started yet';
 
-                $hoursDifference = $nowDate->diffInHours($appointment->start_date);
-                $minutesDifference = $nowDate->diffInMinutes($appointment->start_date) % 60;
-                if(App::isLocale('en')) {
-                    $differenceDate = "$hoursDifference hours and $minutesDifference minutes left";
-                } else {
-                    $differenceDate = "باقي $hoursDifference ساعة و $minutesDifference دقيقية";
-                }
+                $totalMinutes = $nowDate->diffInMinutes($appointment->start_date, false);
+                $hours = floor($totalMinutes / 60); 
+                $minutes = $totalMinutes % 60; 
 
+                if (App::isLocale('en')) {
+                    $differenceDate = "$hours hours and $minutes minutes left";
+                } else {
+                    $differenceDate = "باقي $hours ساعة و $minutes دقيقية";
+                }
             } else {
                 $checkDate = '';
             }
 
 
-            if($dateFormated == $dateDisplayed) {
+            if ($dateFormated == $dateDisplayed) {
                 $bookings[] = [
                     'id' => $appointment->id,
                     'patientId' => $appointment->patient_id,
@@ -196,7 +211,8 @@ class UseController extends Controller
         return view('bookings.days', compact('bookings', 'patientId'));
     }
 
-    public function WeekAppointments($dateDisplayed) {
+    public function WeekAppointments($dateDisplayed)
+    {
         $patient = auth()->user();
         $patientId = $patient->id;
 
@@ -222,7 +238,7 @@ class UseController extends Controller
             $endDate = date('Y-m-d', strtotime($endDate));
         }
 
-        foreach($appointments as $appointment) {
+        foreach ($appointments as $appointment) {
 
             $start_date = Carbon::parse($appointment->start_date);
             $date = $start_date->format('Y-m-d');
@@ -238,19 +254,19 @@ class UseController extends Controller
             } elseif ($nowDate < $appointment->start_date) {
                 $checkDate = 'not started yet';
 
-                $hoursDifference = $nowDate->diffInHours($appointment->start_date);
-                $minutesDifference = $nowDate->diffInMinutes($appointment->start_date) % 60;
-                if(App::isLocale('en')) {
-                    $differenceDate = "$hoursDifference hours and $minutesDifference minutes left";
+                $totalMinutes = $nowDate->diffInMinutes($appointment->start_date, false);
+                $hours = floor($totalMinutes / 60); 
+                $minutes = $totalMinutes % 60; 
+                if (App::isLocale('en')) {
+                    $differenceDate = "$hours hours and $minutes minutes left";
                 } else {
-                    $differenceDate = "باقي $hoursDifference ساعة و $minutesDifference دقيقية";
+                    $differenceDate = "باقي $hours ساعة و $minutes دقيقية";
                 }
-
             } else {
                 $checkDate = '';
             }
 
-            if($date >= $startDate && $date <= $endDate) {
+            if ($date >= $startDate && $date <= $endDate) {
                 $bookings[] = [
                     'id' => $appointment->id,
                     'patientId' => $appointment->patient_id,
@@ -267,19 +283,19 @@ class UseController extends Controller
         return view('bookings.weeks', compact('bookings', 'patientId'));
     }
 
-    public function booking($id, $date) {
+    public function booking($id, $date)
+    {
         $patient = auth()->user();
 
         $dateFormated = Carbon::parse($date)->format('Y-m-d');
 
         $checkBooking = Appointment::where('patient_id', $patient->id)
-        ->where('start_date', '>=', $dateFormated . ' 00:00:00')
-        ->where('start_date', '<=', $dateFormated . ' 23:59:59')
-        ->first();
+            ->where('start_date', '>=', $dateFormated . ' 00:00:00')
+            ->where('start_date', '<=', $dateFormated . ' 23:59:59')
+            ->first();
 
         if ($checkBooking) {
             return response()->json('notBooked');
-
         } else {
             $booking = appointment::find($id);
 
@@ -290,13 +306,13 @@ class UseController extends Controller
 
             return response()->json('booked');
         }
-
     }
 
 
 
     // language
-    public function changeLang($locale) {
+    public function changeLang($locale)
+    {
         if (in_array($locale, ['en', 'ar'])) {
             App::setLocale($locale);
             session()->put('locale', $locale);

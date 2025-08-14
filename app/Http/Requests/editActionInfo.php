@@ -32,7 +32,7 @@ class editActionInfo extends FormRequest
             ],
             'phone' => [
                 'required',
-                'regex:/^\+\d{3} \d{2} \d{3} \d{3}$/',
+                'regex:/^\+\d{3}\d{2}\d{3}\d{3}$/',
                 Rule::unique('users')->ignore($this->id),
             ],
         ];

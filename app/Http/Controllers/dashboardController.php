@@ -8,7 +8,8 @@ use App\Http\Requests\editActionInfo;
 use App\Http\Requests\picturesRequest;
 use App\Http\Requests\updateDocProfile;
 use App\Models\appointment;
-use App\Models\pictures;
+use App\Models\Message;
+use App\Models\Picture;
 use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
@@ -37,13 +38,15 @@ class dashboardController extends Controller
         return view('Admin.searchActions.delete', compact('id'));
     }
 
-    function messages() {
-        $messages = $this->getMessages();
+    public function messages() {
+        $messages = Message::with('message_owner')->get();
+
         return view('Admin.messages', compact('messages'));
     }
 
-    function profile() {
-        $pictures = $this->getPictures();
+    public function profile() {
+        $pictures = Picture::all();
+
         return view('Admin.profile', compact('pictures'));
     }
 
@@ -121,106 +124,50 @@ class dashboardController extends Controller
         return redirect()->route('search')->with('deleted', __('messages.deleteSuccess'));
     }
 
-    private function getMessages() {
-        $messages = DB::table('messages')
-        ->join('users', 'messages.patient_id', '=', 'users.id')
-        ->select('messages.*', 'users.*')
-        ->get();
-
-        return $messages;
-    }
-
-    private function getPictures() {
-        $pictures = pictures::all();
-
-        return $pictures;
-    }
-
-    public function updateInformation(updateDocProfile $request, picturesRequest $request1) {
-        $affected = $this->updateInfo($request);
-        $updatePic = $this->updatePicture($request1);
-
-        if($affected) {
+    public function updateInformation(updateDocProfile $request, picturesRequest $request1)
+    {
+        $infoUpdated = $this->updateInfo($request);
+        $picturesUpdated = $this->updatePicture($request1);
+    
+        if ($infoUpdated && $picturesUpdated) {
+            return redirect()->back()->with('updatedAll', __('All data updated successfully.'));
+        }
+    
+        if ($infoUpdated) {
             return redirect()->back()->with('updated', __('messages.updatedInfo'));
-        } else {
-            return redirect()->back()->with('notUpdated', 'Information not updated.');
         }
-        if($updatePic) {
-            return redirect()->back()->with('updatedPic', 'Pictures updated successfully.');
-        } else {
-            return redirect()->back()->with('notUpdatedPic', 'Pictures not updated.');
+    
+        if ($picturesUpdated) {
+            return redirect()->back()->with('updatedPic', __('Pictures updated successfully.'));
         }
-        if($affected && $updatePic) {
-            return redirect()->back()->with('updatedAll', 'All data updated successfully.');
-        } else {
-            return redirect()->back()->with('notUpdatedAll', 'data not updated.');
-        }
+    
+        return redirect()->back()->with('notUpdated', __('No changes were made.'));
     }
+    
 
-    private function updatePicture($request1) {
-
-        $pic = pictures::find(1);
+    private function updatePicture($request)
+    {
+        $pic = Picture::find(1);
+        if (!$pic) return false;
+    
+        $files = ['homePhoto', 'ourDocPhoto', 'clinic1', 'clinic2', 'clinic3'];
         $data = [];
-        $updated = false;
-
-        if ($pic) {
-            if ($request1->file('homePhoto')) {
-                $originalFileName = $request1->file('homePhoto')->getClientOriginalName();
-
-                $uniqueFileName = $originalFileName;
-
-                $filePath = 'storage/assets/images/' . $uniqueFileName;
-                $data['homePhoto'] = $filePath;
-
-                $request1->file('homePhoto')->storeAs('public/assets/images', $uniqueFileName);
-
-            }
-
-            if ($request1->file('ourDocPhoto')) {
-                $originalFileName = $request1->file('ourDocPhoto')->getClientOriginalName();
-                $uniqueFileName = $originalFileName;
-
-                $filePath = 'storage/assets/images/' . $uniqueFileName;
-                $data['ourDocPhoto'] = $filePath;
-
-                $request1->file('ourDocPhoto')->storeAs('public/assets/images', $uniqueFileName);
-            }
-
-            if ($request1->file('clinic1')) {
-                $originalFileName = $request1->file('clinic1')->getClientOriginalName();
-                $uniqueFileName = $originalFileName;
-
-                $filePath = 'storage/assets/images/' . $uniqueFileName;
-                $data['clinic1'] = $filePath;
-
-                $request1->file('clinic1')->storeAs('public/assets/images', $uniqueFileName);
-            }
-
-            if ($request1->file('clinic2')) {
-                $originalFileName = $request1->file('clinic2')->getClientOriginalName();
-                $uniqueFileName = $originalFileName;
-
-                $filePath = 'storage/assets/images/' . $uniqueFileName;
-                $data['clinic2'] = $filePath;
-
-                $request1->file('clinic2')->storeAs('public/assets/images', $uniqueFileName);
-            }
-
-            if ($request1->file('clinic3')) {
-                $originalFileName = $request1->file('clinic3')->getClientOriginalName();
-                $uniqueFileName = $originalFileName;
-
-                $filePath = 'storage/assets/images/' . $uniqueFileName;
-                $data['clinic3'] = $filePath;
-
-                $request1->file('clinic3')->storeAs('public/assets/images', $uniqueFileName);
-            }
-
-            if (!empty($data)) {
-                $updated = $pic->update($data);
+    
+        $destinationPath = public_path('images'); // public/images
+        if (!file_exists($destinationPath)) {
+            mkdir($destinationPath, 0755, true);
+        }
+    
+        foreach ($files as $fileField) {
+            if ($request->hasFile($fileField)) {
+                $file = $request->file($fileField);
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move($destinationPath, $filename); 
+                $data[$fileField] = 'images/' . $filename; 
             }
         }
-        return $updated;
+    
+        return !empty($data) ? $pic->update($data) : false;
     }
 
     private function updateInfo($request) {

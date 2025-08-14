@@ -5,7 +5,8 @@
 <div class="container mx-auto md:flex mb-5 px-auto" id="home">
     <div class="md:pt-36 md:w-2/5 pt-20">
         <div class="border-t-8 border-green-500 pb-3 w-40 ms-5 md:ms-0 xl:ms-0"></div>
-        <h1 class="text-2xl xl:text-6xl md:text-3xl text-justify px-5 md:ps-0 xl:ps-0">{{ __("messages.h1") }} <span class="text-blue-500">{{ __("messages.h1Span") }}</span></h1>
+        <h1 class="text-2xl xl:text-7xl md:text-3xl md:ps-0 xl:ps-0">
+            {{ __("messages.h1") }} <span class="text-blue-500">{{ __("messages.h1Span") }}</span></h1>
         <p class="pt-5 text-sm text-justify px-5 md:px-0 xl:px-0 pb-5">{{ __("messages.homeP") }}</p>
         @auth
             <a href="{{ route('appointment') }}" class="cursor-pointer rounded-2xl mt-5 px-4 py-2 bg-blue-500 hover:bg-blue-800 text-white ms-5 md:ms-0 xl:ms-0 text-sm">{{ __("messages.bookNow") }}</a>
@@ -17,7 +18,7 @@
     <div class="md:w-1/5"></div>
     <div class="homeImg w-full md:w-1/2 flex items-center justify-center">
         @foreach ($pictures as $picture)
-            <img src="{{ asset('' . $picture->homePhoto . '') }}" alt="" class="rounded-xl bg-cover">
+            <img src="{{ asset('' . $picture->homePhoto . '') }}" alt="" class="rounded-full  bg-cover">
         @endforeach
     </div>
     </div>
@@ -36,7 +37,7 @@
 </div>
 {{-- =============  ====================== --}}
 <div class="services py-20">
-    <h1 class="flex justify-center text-2xl font-semibold mb-20 text-blue-500">{{ __("messages.services") }}</h1>
+    <h1 class="flex justify-center text-4xl font-bold mb-20 text-black">{{ __("messages.services") }}</h1>
     <div class="grid col-span-1 md:grid-cols-2 container mx-auto gap-3 rounded-2xl">
         <div class="leftService md:col-span-1 mx-5 md:mx-0 shadow-md border-t-4 border-green-300  rounded-xl py-5">
             <h2 class="flex justify-center text-xl font-semibold mb-5">{{ __("messages.services1") }}</h2>
@@ -178,7 +179,7 @@
 
 
     let li1 = document.getElementById("li1");
-    li1.classList.add("active", "border-b-2", "border-green-600", "pb-2", "font-semibold");
+    li1.classList.add("active", "bg-green-500/50", "p-2", "rounded-md", "font-semibold");
 
 
     let li1s = document.getElementById("li1s");

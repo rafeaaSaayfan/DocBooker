@@ -47,7 +47,7 @@
 
 
 
-      "footer.rights" => "2023 Doctor Booker. All rights reserved.",
+      "footer.rights" => "2025 Doctor Booker. All rights reserved.",
       "footer.privacy" => "Privacy Policy",
       "footer.terms" => "Terms of Use",
 

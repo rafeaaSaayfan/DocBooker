@@ -1,16 +1,19 @@
     <div class="flex flex-wrap items-center justify-between mx-auto bg-white px-5 py-3 shadow">
         <div>
             <a href="" class="flex items-center">
-                <span class="docbooker font-semibold text-xl">{{ __("messages.websiteName") }}</span>
+                <span class="docbooker font-bold text-xl">{{ __("messages.websiteName") }}</span>
             </a>
         </div>
         <!-- Navbar -->
         <div class="hidden md:block">
             <ul class="flex xl:gap-16 md:gap-5 items-center text-sm">
                 <li id="li1">
-                    <a href="{{ route('auth') }}" class="hover:text-blue-700">
-                        {{ __("messages.nav.home") }}
-                    </a>
+                    @auth
+                        <a href="{{ route('auth') }}" class="hover:text-blue-700">{{ __("messages.nav.home") }}</a>
+                    @endauth
+                    @guest
+                        <a href="{{ route('guest') }}" class="hover:text-blue-700">{{ __("messages.nav.home") }}</a>
+                    @endguest
                 </li>
                 <li id="li2">
                     @auth
